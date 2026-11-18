@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package quickbite;
+
+option go_package = "quickbite/07-grpc/pb";
+
+service DeliveryService {
+  // Unary: One request, one response.
+  rpc GetEta (EtaRequest) returns (EtaReply);
+
+  // Server streaming: One request, stream of updates (live rider GPS).
+  rpc TrackRider (TrackRequest) returns (stream RiderLocation);
+
+  // Client streaming: Stream of GPS points, single summary reply at the end.
+  rpc UploadRoute (stream RiderLocation) returns (RouteSummary);
+}
+
+message EtaRequest {
+  string order_id = 1;
+}
+
+message EtaReply {
+  string order_id = 1;
+  int32 minutes = 2;
+  string rider_name = 3;
+}
+
+message TrackRequest {
+  string order_id = 1;
+}
+
+message RiderLocation {
+  string order_id = 1;
+  double lat = 2;
+  double lng = 3;
+  int32 meters_left = 4;
+  int64 timestamp_ms = 5;
+}
+
+message RouteSummary {
+  int32 points = 1;
+  double total_km = 2;
+}
+
